@@ -1,0 +1,2 @@
+selected_feature_count,selected_features,accuracy,precision,recall,f1_score
+10,"bytes_per_second, resp_is_private, resp_is_public, duration, pkt_ratio, byte_ratio, id.orig_p, resp_bytes, resp_pkts, resp_ip_bytes",1.0,1.0,1.0,1.0

@@ -1,0 +1,2 @@
+selected_feature_count,selected_features,accuracy,precision,recall,f1_score
+7,"duration, proto, history, resp_ip_bytes, resp_bytes, orig_ip_bytes, id.resp_p",0.9996,0.9998961146893829,0.9996884088076444,0.9997922509608393

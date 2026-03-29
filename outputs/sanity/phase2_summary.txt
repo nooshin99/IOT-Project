@@ -1,0 +1,17 @@
+Dataset used: /private/tmp/iot23_sanity.csv
+Samples used after cleaning: 12
+
+Baseline classification summary:
+Best model: logistic_regression with accuracy=1.0000, precision=1.0000, recall=1.0000, f1=1.0000.
+
+Clustering summary:
+K-means silhouette score=0.4620, cluster 0 malicious rate=1.0000, cluster 1 malicious rate=0.0000.
+
+Most useful signals:
+num__bytes_per_second, num__resp_is_private, num__resp_is_public, num__duration, num__pkt_ratio, num__byte_ratio, num__id.orig_p, num__resp_bytes
+
+Signals removed or deprioritized:
+cat__service_ssl, cat__service_http, cat__conn_state_REJ, cat__service_dns, num__orig_is_private
+
+Reduced feature evaluation:
+Using 10 selected features, Random Forest reached accuracy=1.0000 and f1=1.0000.

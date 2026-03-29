@@ -1,0 +1,17 @@
+{
+  "dataset": "/private/tmp/iot23_sanity.csv",
+  "rows_after_cleaning": 12,
+  "best_model": "logistic_regression",
+  "selected_columns": [
+    "bytes_per_second",
+    "resp_is_private",
+    "resp_is_public",
+    "duration",
+    "pkt_ratio",
+    "byte_ratio",
+    "id.orig_p",
+    "resp_bytes",
+    "resp_pkts",
+    "resp_ip_bytes"
+  ]
+}
