@@ -1,0 +1,18 @@
+{
+  "dataset": "/Users/nooshin/Documents/Playground/data/iot23/combined_iot23_real.csv",
+  "rows_after_cleaning": 50000,
+  "best_model": "gradient_boosting",
+  "selected_columns": [
+    "duration",
+    "proto",
+    "history",
+    "conn_state_S0",
+    "resp_ip_bytes",
+    "conn_state_REJ",
+    "conn_state_SF",
+    "resp_bytes",
+    "orig_ip_bytes",
+    "id.resp_p"
+  ],
+  "best_clustering_method": "kmeans"
+}

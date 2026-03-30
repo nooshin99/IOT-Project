@@ -1,0 +1,4 @@
+method,cluster_count,noise_fraction,silhouette_score,cluster_0_size,cluster_0_malicious_rate,cluster_1_size,cluster_1_malicious_rate,cluster_2_size,cluster_2_malicious_rate,cluster_3_size,cluster_3_malicious_rate
+kmeans,2,0.0,0.7907096991216636,47986,0.9648647522193973,2014,0.9141012909632572,,,,
+agglomerative,2,0.0,0.7897313276217254,48013,0.9643221627475892,1987,0.9265223955712129,,,,
+dbscan,13,0.00404,0.6120006454842518,19339,1.0,20319,0.9578227274964319,274.0,0.0,296.0,0.0

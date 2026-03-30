@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.cluster import KMeans
+from sklearn.cluster import AgglomerativeClustering, DBSCAN, KMeans
 from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
@@ -296,40 +296,103 @@ def plot_confusion_matrix(matrix: np.ndarray, model_name: str, output_path: Path
     plt.close()
 
 
-def run_clustering(X: pd.DataFrame, y: pd.Series, output_dir: Path, random_state: int) -> Dict[str, float]:
-    preprocessor, _, _ = build_preprocessor(X)
-    transformed = preprocessor.fit_transform(X)
-    dense_matrix = transformed.toarray() if hasattr(transformed, "toarray") else transformed
+def prepare_clustering_matrix(X: pd.DataFrame) -> np.ndarray:
+    numeric_X = X.select_dtypes(include=[np.number]).copy()
+    numeric_X = numeric_X.replace([np.inf, -np.inf], np.nan)
+    numeric_X = numeric_X.fillna(numeric_X.median(numeric_only=True))
+    scaler = StandardScaler()
+    scaled = scaler.fit_transform(numeric_X)
+    scaled = np.nan_to_num(scaled, nan=0.0, posinf=0.0, neginf=0.0)
+    return np.clip(scaled, -10.0, 10.0)
 
-    kmeans = KMeans(n_clusters=2, random_state=random_state, n_init=10)
-    cluster_labels = kmeans.fit_predict(dense_matrix)
 
-    clustering_summary = {
-        "silhouette_score": float(silhouette_score(dense_matrix, cluster_labels)),
-        "cluster_0_malicious_rate": float(y[cluster_labels == 0].mean()) if np.any(cluster_labels == 0) else np.nan,
-        "cluster_1_malicious_rate": float(y[cluster_labels == 1].mean()) if np.any(cluster_labels == 1) else np.nan,
+def summarize_cluster_labels(
+    method_name: str,
+    labels: np.ndarray,
+    matrix: np.ndarray,
+    y: pd.Series,
+) -> Dict[str, float | str]:
+    unique_labels = sorted(set(labels))
+    non_noise_labels = [label for label in unique_labels if label != -1]
+    cluster_count = len(non_noise_labels)
+    noise_fraction = float(np.mean(labels == -1)) if -1 in unique_labels else 0.0
+
+    if cluster_count >= 2:
+        valid_mask = labels != -1 if -1 in unique_labels else np.ones(len(labels), dtype=bool)
+        silhouette = float(silhouette_score(matrix[valid_mask], labels[valid_mask]))
+    else:
+        silhouette = np.nan
+
+    summary: Dict[str, float | str] = {
+        "method": method_name,
+        "cluster_count": cluster_count,
+        "noise_fraction": noise_fraction,
+        "silhouette_score": silhouette,
     }
 
-    pca = PCA(n_components=2, random_state=random_state)
-    coords = pca.fit_transform(dense_matrix)
+    for label in non_noise_labels[:4]:
+        mask = labels == label
+        summary[f"cluster_{label}_size"] = int(np.sum(mask))
+        summary[f"cluster_{label}_malicious_rate"] = float(y[mask].mean()) if np.any(mask) else np.nan
+
+    return summary
+
+
+def plot_cluster_projection(
+    coords: np.ndarray,
+    labels: np.ndarray,
+    y: pd.Series,
+    title: str,
+    output_path: Path,
+) -> None:
     cluster_df = pd.DataFrame(
         {
             "pc1": coords[:, 0],
             "pc2": coords[:, 1],
-            "cluster": cluster_labels.astype(str),
+            "cluster": labels.astype(str),
             "target": y.map({0: "Benign", 1: "Malicious"}),
         }
     )
 
     plt.figure(figsize=(8, 6))
-    sns.scatterplot(data=cluster_df, x="pc1", y="pc2", hue="cluster", style="target", alpha=0.7)
-    plt.title("K-means Clustering on IoT-23 Features (PCA Projection)")
+    sns.scatterplot(data=cluster_df, x="pc1", y="pc2", hue="cluster", style="target", alpha=0.65, s=30)
+    plt.title(title)
     plt.tight_layout()
-    plt.savefig(output_dir / "clustering_pca.png", dpi=200)
+    plt.savefig(output_path, dpi=200)
     plt.close()
 
-    pd.DataFrame([clustering_summary]).to_csv(output_dir / "clustering_summary.csv", index=False)
-    return clustering_summary
+
+def run_clustering(X: pd.DataFrame, y: pd.Series, output_dir: Path, random_state: int) -> pd.DataFrame:
+    clustering_limit = 10000
+    if len(X) > clustering_limit:
+        sampled = X.assign(target=y).sample(n=clustering_limit, random_state=random_state, replace=False)
+        y = sampled.pop("target")
+        X = sampled
+
+    matrix = prepare_clustering_matrix(X)
+    pca = PCA(n_components=2, random_state=random_state)
+    coords = pca.fit_transform(matrix)
+
+    clustering_runs = {
+        "kmeans": KMeans(n_clusters=2, random_state=random_state, n_init=10).fit_predict(matrix),
+        "agglomerative": AgglomerativeClustering(n_clusters=2).fit_predict(matrix),
+        "dbscan": DBSCAN(eps=0.9, min_samples=20).fit_predict(matrix),
+    }
+
+    summaries = []
+    for method_name, labels in clustering_runs.items():
+        summaries.append(summarize_cluster_labels(method_name, labels, matrix, y))
+        plot_cluster_projection(
+            coords,
+            labels,
+            y,
+            f"{method_name.replace('_', ' ').title()} Clustering on IoT-23 (PCA Projection)",
+            output_dir / f"clustering_{method_name}_pca.png",
+        )
+
+    summary_df = pd.DataFrame(summaries)
+    summary_df.to_csv(output_dir / "clustering_summary.csv", index=False)
+    return summary_df
 
 
 def extract_feature_importance(best_pipeline: Pipeline, X_train: pd.DataFrame, y_train: pd.Series) -> pd.DataFrame:
@@ -433,13 +496,19 @@ def write_summary(
     dataset_path: Path,
     row_count: int,
     metrics_df: pd.DataFrame,
-    clustering_summary: Dict[str, float],
+    clustering_summary_df: pd.DataFrame,
     importance_df: pd.DataFrame,
     reduced_df: pd.DataFrame,
 ) -> None:
     top_features = importance_df.head(8)["feature"].tolist()
     best_row = metrics_df.sort_values(by="f1_score", ascending=False).iloc[0]
     removed_candidates = importance_df.tail(5)["feature"].tolist()
+
+    best_clustering = clustering_summary_df.sort_values(
+        by=["silhouette_score", "cluster_count"],
+        ascending=[False, False],
+        na_position="last",
+    ).iloc[0]
 
     lines = [
         f"Dataset used: {dataset_path}",
@@ -454,9 +523,10 @@ def write_summary(
         "",
         "Clustering summary:",
         (
-            f"K-means silhouette score={clustering_summary['silhouette_score']:.4f}, "
-            f"cluster 0 malicious rate={clustering_summary['cluster_0_malicious_rate']:.4f}, "
-            f"cluster 1 malicious rate={clustering_summary['cluster_1_malicious_rate']:.4f}."
+            f"Best clustering method: {best_clustering['method']} with "
+            f"silhouette score={best_clustering['silhouette_score']:.4f}, "
+            f"cluster_count={int(best_clustering['cluster_count'])}, "
+            f"noise_fraction={best_clustering['noise_fraction']:.4f}."
         ),
         "",
         "Most useful signals:",
@@ -514,7 +584,7 @@ def main() -> None:
     )
     metrics_df.to_csv(output_dir / "classification_metrics.csv", index=False)
 
-    clustering_summary = run_clustering(features_df, target, output_dir, args.random_state)
+    clustering_summary_df = run_clustering(features_df, target, output_dir, args.random_state)
 
     best_pipeline.fit(X_train, y_train)
     importance_df = extract_feature_importance(best_pipeline, X_train, y_train)
@@ -535,6 +605,11 @@ def main() -> None:
         "rows_after_cleaning": int(len(features_df)),
         "best_model": best_model_info["best_model"],
         "selected_columns": selected_columns,
+        "best_clustering_method": clustering_summary_df.sort_values(
+            by=["silhouette_score", "cluster_count"],
+            ascending=[False, False],
+            na_position="last",
+        ).iloc[0]["method"],
     }
     (output_dir / "run_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
@@ -543,7 +618,7 @@ def main() -> None:
         dataset_path,
         len(features_df),
         metrics_df,
-        clustering_summary,
+        clustering_summary_df,
         importance_df,
         reduced_df,
     )

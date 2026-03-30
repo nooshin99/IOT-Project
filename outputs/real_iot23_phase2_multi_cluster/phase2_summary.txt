@@ -1,0 +1,17 @@
+Dataset used: /Users/nooshin/Documents/Playground/data/iot23/combined_iot23_real.csv
+Samples used after cleaning: 50000
+
+Baseline classification summary:
+Best model: gradient_boosting with accuracy=0.9998, precision=1.0000, recall=0.9998, f1=0.9999.
+
+Clustering summary:
+Best clustering method: kmeans with silhouette score=0.7907, cluster_count=2, noise_fraction=0.0000.
+
+Most useful signals:
+num__duration, cat__proto_tcp, cat__history_ShAdDaFf, cat__conn_state_S0, cat__history_Sr, num__resp_ip_bytes, cat__conn_state_REJ, cat__conn_state_SF
+
+Signals removed or deprioritized:
+cat__history_ShAadDFf, cat__history_ShAdDaF, cat__conn_state_RSTRH, cat__history_SahAdDFf, num__resp_is_private
+
+Reduced feature evaluation:
+Using 7 selected features, Random Forest reached accuracy=0.9996 and f1=0.9998.
