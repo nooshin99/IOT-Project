@@ -1,0 +1,47 @@
+{
+  "feature_columns": [
+    "duration",
+    "id.orig_p",
+    "id.resp_p",
+    "orig_bytes",
+    "resp_bytes",
+    "orig_pkts",
+    "resp_pkts",
+    "orig_ip_bytes",
+    "resp_ip_bytes",
+    "missed_bytes",
+    "proto",
+    "service",
+    "conn_state",
+    "history",
+    "orig_is_private",
+    "resp_is_private",
+    "resp_is_public",
+    "total_bytes",
+    "byte_ratio",
+    "total_pkts",
+    "pkt_ratio",
+    "bytes_per_second"
+  ],
+  "excluded_leakage_columns": [
+    "label",
+    "detailed-label",
+    "scenario",
+    "family",
+    "uid",
+    "ts",
+    "source_file"
+  ],
+  "train_test_scenario_overlap": [],
+  "exact_feature_row_overlap_count": 151,
+  "train_rows_split0": 21443,
+  "test_rows_split0": 11109,
+  "train_target_distribution_split0": {
+    "benign": 12427,
+    "malicious": 9016
+  },
+  "test_target_distribution_split0": {
+    "benign": 5109,
+    "malicious": 6000
+  }
+}

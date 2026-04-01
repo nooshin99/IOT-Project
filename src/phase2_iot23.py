@@ -130,7 +130,7 @@ def read_zeek_log(lines: List[str]) -> pd.DataFrame:
 
 
 def normalize_missing_values(df: pd.DataFrame) -> pd.DataFrame:
-    return df.replace({"-": np.nan, "(empty)": np.nan, "": np.nan})
+    return df.replace({"-": np.nan, "(empty)": np.nan, "": np.nan}).infer_objects(copy=False)
 
 
 def find_label_column(df: pd.DataFrame) -> str:

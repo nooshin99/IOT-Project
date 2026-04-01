@@ -1,0 +1,10 @@
+scenario,family,capture_type,Benign,Malicious,total_rows
+CTU-Honeypot-Capture-4-1,Philips-HUE,benign,452.0,0.0,452.0
+CTU-Honeypot-Capture-5-1,Amazon-Echo,benign,1374.0,0.0,1374.0
+CTU-Honeypot-Capture-7-1-Somfy-01,Somfy-Doorlock,benign,130.0,0.0,130.0
+CTU-IoT-Malware-Capture-1-1,Hide-and-Seek,malicious,3000.0,3000.0,6000.0
+CTU-IoT-Malware-Capture-20-1,Torii,malicious,3000.0,16.0,3016.0
+CTU-IoT-Malware-Capture-3-1,Muhstik,malicious,3000.0,3000.0,6000.0
+CTU-IoT-Malware-Capture-34-1,Mirai,malicious,1923.0,3000.0,4923.0
+CTU-IoT-Malware-Capture-60-1,Gagfyt,malicious,2476.0,3000.0,5476.0
+CTU-IoT-Malware-Capture-8-1,Hakai,malicious,2181.0,3000.0,5181.0

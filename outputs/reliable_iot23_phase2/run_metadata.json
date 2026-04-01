@@ -1,0 +1,34 @@
+{
+  "data_dir": "/Users/nooshin/Documents/IOT-project-root/data/iot23_multi/raw",
+  "num_scenarios": 9,
+  "num_splits": 5,
+  "max_per_class_per_scenario": 3000,
+  "best_model": "extra_trees",
+  "test_scenarios_per_split": [
+    [
+      "CTU-Honeypot-Capture-4-1",
+      "CTU-IoT-Malware-Capture-60-1",
+      "CTU-IoT-Malware-Capture-8-1"
+    ],
+    [
+      "CTU-Honeypot-Capture-5-1",
+      "CTU-IoT-Malware-Capture-1-1",
+      "CTU-IoT-Malware-Capture-60-1"
+    ],
+    [
+      "CTU-Honeypot-Capture-4-1",
+      "CTU-IoT-Malware-Capture-1-1",
+      "CTU-IoT-Malware-Capture-34-1"
+    ],
+    [
+      "CTU-Honeypot-Capture-7-1-Somfy-01",
+      "CTU-IoT-Malware-Capture-60-1",
+      "CTU-IoT-Malware-Capture-8-1"
+    ],
+    [
+      "CTU-Honeypot-Capture-5-1",
+      "CTU-IoT-Malware-Capture-1-1",
+      "CTU-IoT-Malware-Capture-8-1"
+    ]
+  ]
+}

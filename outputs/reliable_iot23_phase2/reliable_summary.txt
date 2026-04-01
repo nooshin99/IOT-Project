@@ -1,0 +1,20 @@
+Reliable IoT-23 scenario-based evaluation
+
+Scenarios used: 9
+Sampled benign rows: 17536
+Sampled malicious rows: 15016
+
+Best model by macro-F1: extra_trees (macro-F1=0.9776 +/- 0.0238, balanced_accuracy=0.9780 +/- 0.0238, PR-AUC=0.9531 +/- 0.0449, MCC=0.9555 +/- 0.0476).
+
+Scenario-based test splits:
+Split 0: test=CTU-Honeypot-Capture-4-1, CTU-IoT-Malware-Capture-60-1, CTU-IoT-Malware-Capture-8-1; train=CTU-Honeypot-Capture-5-1, CTU-Honeypot-Capture-7-1-Somfy-01, CTU-IoT-Malware-Capture-1-1, CTU-IoT-Malware-Capture-20-1, CTU-IoT-Malware-Capture-3-1, CTU-IoT-Malware-Capture-34-1
+Split 1: test=CTU-Honeypot-Capture-5-1, CTU-IoT-Malware-Capture-1-1, CTU-IoT-Malware-Capture-60-1; train=CTU-Honeypot-Capture-4-1, CTU-Honeypot-Capture-7-1-Somfy-01, CTU-IoT-Malware-Capture-20-1, CTU-IoT-Malware-Capture-3-1, CTU-IoT-Malware-Capture-34-1, CTU-IoT-Malware-Capture-8-1
+Split 2: test=CTU-Honeypot-Capture-4-1, CTU-IoT-Malware-Capture-1-1, CTU-IoT-Malware-Capture-34-1; train=CTU-Honeypot-Capture-5-1, CTU-Honeypot-Capture-7-1-Somfy-01, CTU-IoT-Malware-Capture-20-1, CTU-IoT-Malware-Capture-3-1, CTU-IoT-Malware-Capture-60-1, CTU-IoT-Malware-Capture-8-1
+Split 3: test=CTU-Honeypot-Capture-7-1-Somfy-01, CTU-IoT-Malware-Capture-60-1, CTU-IoT-Malware-Capture-8-1; train=CTU-Honeypot-Capture-4-1, CTU-Honeypot-Capture-5-1, CTU-IoT-Malware-Capture-1-1, CTU-IoT-Malware-Capture-20-1, CTU-IoT-Malware-Capture-3-1, CTU-IoT-Malware-Capture-34-1
+Split 4: test=CTU-Honeypot-Capture-5-1, CTU-IoT-Malware-Capture-1-1, CTU-IoT-Malware-Capture-8-1; train=CTU-Honeypot-Capture-4-1, CTU-Honeypot-Capture-7-1-Somfy-01, CTU-IoT-Malware-Capture-20-1, CTU-IoT-Malware-Capture-3-1, CTU-IoT-Malware-Capture-34-1, CTU-IoT-Malware-Capture-60-1
+
+Top signals from the best model on split 0:
+cat__proto_tcp, cat__proto_udp, cat__history_S, cat__history_D, num__id.orig_p, cat__conn_state_REJ, cat__conn_state_S0, cat__history_C, cat__history_Sr, cat__conn_state_OTH
+
+Leakage controls:
+Scenario-based holdout was used, label columns were excluded from features, and split 0 had zero scenario overlap between train and test.
